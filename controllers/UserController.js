@@ -2,10 +2,15 @@ const User = require("../models/user.model");
 const bcrypt = require('bcrypt');
 
 const createUser = async (req, res) => {
-    const {first_name, last_name, password, username} = req.body;
+    const {first_name, last_name, password, username, ...unwantedFields} = req.body;
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if(req.originalUrl.includes('?')) {
+    if (req.originalUrl.includes('?')) {
         return res.status(400).send();
+    }
+    if (Object.keys(unwantedFields).length > 0) {
+        return res.status(400).json({
+            message: "Invalid request body: contains unwanted fields."
+        })
     }
     if (!first_name || !last_name || !password || !username) {
         return res.status(400).json({
@@ -15,6 +20,11 @@ const createUser = async (req, res) => {
     if (typeof first_name !== 'string' || typeof last_name !== 'string' || typeof password !== 'string') {
         return res.status(400).json({
             message: "Name and Password must be String"
+        });
+    }
+    if (password.length <= 5) {
+        return res.status(400).json({
+            message: "Minimum Password Length is 6 char"
         });
     }
     if (!emailRegex.test(username)) {
@@ -30,11 +40,11 @@ const createUser = async (req, res) => {
     try {
         const existingUser = await User.findOne({
             where: {
-                username:username
+                username: username
             }
         });
         if (existingUser) {
-            return res.status(400).json({
+            return res.status(409).json({
                 message: "Username already exists"
             });
         }
@@ -61,54 +71,84 @@ const createUser = async (req, res) => {
     }
 }
 
-const editUserData = async (req,res) =>{
-    const {first_name, last_name, password } = req.body;
+const editUserData = async (req, res) => {
+    const {first_name, last_name, password, username, ...unwantedFields} = req.body;
     const authUser = req.authUser.username;
     if (req.body.id || req.body.createdAt || req.body.updatedAt) {
         return res.status(400).json({
             message: "Invalid update operation. You can only update first name, last name, and password."
         });
     }
+    if (Object.keys(unwantedFields).length > 0) {
+        return res.status(400).json({
+            message: "Invalid fields. You can only update first name, last name, and password"
+        })
+    }
 
-    if(!(first_name || last_name || password )){
+    if (!(first_name || last_name || password)) {
         return res.status(400).json({
             message: " Invalid update operation. FirstName, LastName or Password are required"
         });
+
     }
-    try{
-        const existingUser = await User.findOne({where:{
-            username: authUser
-            }});
-        if(!existingUser){
+    if (first_name && typeof first_name !== 'string') {
+        return res.status(400).json({
+            message: "First name must be a string."
+        });
+    }
+
+    if (last_name && typeof last_name !== 'string') {
+        return res.status(400).json({
+            message: "Last name must be a string."
+        });
+    }
+
+    if (password && typeof password !== 'string') {
+        return res.status(400).json({
+            message: "Password must be a string."
+        });
+    }
+    if (password && password.length <= 5) {
+        return res.status(400).json({
+            message: "Minimum Password Length is 6 char"
+        });
+    }
+    try {
+        const existingUser = await User.findOne({
+            where: {
+                username: authUser
+            }
+        });
+        if (!existingUser) {
             return res.status(404).json({
                 message: "User Not Found"
             });
         }
+
         existingUser.set({
             first_name: first_name || existingUser.first_name,
             last_name: last_name || existingUser.last_name,
-            ...(password && { password: await bcrypt.hash(password, await bcrypt.genSalt(10)) })
+            ...(password && {password: await bcrypt.hash(password, await bcrypt.genSalt(10))})
         });
-            await existingUser.save();
-            res.status(204).send();
-    }
-    catch (err){
+        await existingUser.save();
+        res.status(204).send();
+    } catch (err) {
         return res.status(400).json({
             message: "Invalid request"
         });
     }
 }
-const getUser = async (req,res) =>{
+const getUser = async (req, res) => {
     const requestContent = req.headers['content-length'];
     const authUser = req.authUser.username;
     if (parseInt(requestContent) > 0) {
         return res.status(400).send();
     }
 
-    if(req.originalUrl.includes('?')) {
+    if (req.originalUrl.includes('?')) {
         return res.status(400).send();
     }
-    try{
+    try {
         const user = await User.findOne({
             where:
                 {
@@ -116,19 +156,17 @@ const getUser = async (req,res) =>{
                 },
             attributes:
                 {
-                exclude: ['password']
+                    exclude: ['password']
                 }
 
         });
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                message:"User not found"
+                message: "User not found"
             });
         }
         return res.status(200).json(user);
-    }
-    catch (err)
-    {
+    } catch (err) {
         return res.status(400).json({
             message: "Invalid request"
         });

@@ -19,44 +19,50 @@
 
 
 1. **Import NodeSource Repository**:
-   - First, you'll need to download and execute the NodeSource installation script for Node.js v20.x. You can do this with `curl` and execute the script with . `Open your terminal and run`:
+   - First, you'll need to download and execute the NodeSource installation script for Node.js v20.x. You can do this with `curl` and execute the script with . `Open your terminal and run`
      ```
      curl -sL https://rpm.nodesource.com/setup_20.x | sudo bash -
      ```
 
 2. **Install Node.js**:
-   - Once the repository has been added, you can install Node.js with `dnf` (CentOS 8 and later). Since CentOS 8 and later versions use `dnf`, you'll likely use:
+   - Once the repository has been added, you can install Node.js with `dnf` (CentOS 8 and later). Since CentOS 8 and later versions use `dnf`
 
      ```
      sudo dnf install -y nodejs
      ```
 
 3. **Verify Installation**:
-   - After installation, verify that Node.js and npm are correctly installed by checking their versions:
+   - After installation, verify that Node.js and npm are correctly installed 
 
      ```
      node -v
+     ```
+     ```
      npm -v
      ```
 ### 4. Install PostgreSQL
 
-   - Install PostgreSQL on your droplet:
+   - Install PostgreSQL on your droplet
 
 	```
 	sudo dnf install -y postgresql-server postgresql-contrib
 	```
 
-   - Initialize the database and enable it to start on boot:
+   - Initialize the database and enable it to start on boot
 
 	```
 	sudo postgresql-setup --initdb
+ 	```
+  	```
 	sudo systemctl start postgresql
+ 	```
+  	```
 	sudo systemctl enable postgresql
 	```
 
 ### 5. Configure PostgreSQL
 
- - Switch to the `postgres` user and create a new database and user for your application:
+ - Switch to the `postgres` user and create a new database and user for your application
 
 	```
 	sudo -i -u postgres
@@ -66,13 +72,13 @@
 	GRANT ALL PRIVILEGES ON DATABASE cloud_db TO cloud_admin;
 	vi /var/lib/pgsql/data/pg_hba.conf
 	```
-	- in pg_hba.conf make IPv4 and IPv6 local connection method *ident* to *md5*
+- in pg_hba.conf make IPv4 and IPv6 local connection method *ident* to *md5*
 	
 	```
      host    all             all             127.0.0.1/32            ident
      host    all             all             ::1/128                 ident
      ```
-	- Restart postgres after that
+- Restart postgres after that
 	
 	```
 	systemctl restart postgresql
@@ -81,12 +87,12 @@
 
 ### 6. Transfer Your Web App to the Droplet
 
-	- Use `scp` to transfer your application files to the droplet. This command remains the same across distributions:
+- Use `scp` to transfer your application files to the droplet
 
 	```
 	scp -r webapp-main.zip root@your_droplet_ip:/home
 	```
-	- Unzip it
+- Unzip it
 
 	```
 	sudo dnf install zip
@@ -95,7 +101,7 @@
 
 ### 7. Install Your App Dependencies
 
-	SSH back into your droplet, navigate to your app's directory, and install dependencies:
+SSH back into your droplet, navigate to your app's directory, and install dependencies:
 
 	```
 	cd /home/webapp
@@ -104,15 +110,13 @@
 
 ### 8. Configure Environment Variables
 
-	Configuration of .env file
+Configuration of .env file
 	```
 	cat .env.example > .env
 	vi .env
 	```
 
 ### 9. Start Your Application
-
-	You can start your application using Node directly:
 
 	```					
 	node server.js
@@ -131,10 +135,10 @@
     "last_name": "more",
     "password": "nitesh123",
     "username": "nitesh@email.com"
-	}'
-
-	```
-	to get encoded value for header
+    }'
+```
+- to get encoded value for header
+  
 	```
 	 echo -n 'username:password' | base64
 	```

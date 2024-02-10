@@ -42,12 +42,14 @@
      ```
 ### 4. Install PostgreSQL
 
-   - Install PostgreSQL on your droplet
+Install PostgreSQL on your droplet
+     
 	```
 	sudo dnf install -y postgresql-server postgresql-contrib
 	```
 
-   - Initialize the database and enable it to start on boot
+Initialize the database and enable it to start on boot
+
 	```
 	sudo postgresql-setup --initdb
  	sudo systemctl start postgresql
@@ -105,6 +107,7 @@ SSH back into your droplet, navigate to your app's directory, and install depend
 ### 8. Configure Environment Variables
 
 Configuration of .env file
+
 	```
 	cat .env.example > .env
 	vi .env

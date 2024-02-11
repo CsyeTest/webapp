@@ -159,15 +159,25 @@ vi .env
   ```
 
 ## If using sh script:
-1. scp -r deployement.sh root@IP:/home
-2. scp -r web-app.zip root@IP:/home
+1. ```scp -r deployement.sh root@IP:/home```
 
-   -After copy execute below:
-4. chmod 755 deployement.sh
-5. ./deployement.sh db_user_name db_user_password
-   
-   -After execution run below:
-7. vi .env
-8. vi /var/lib/pgsql/data/pg_hba.conf
-9. systemctl restart postgresql
+
+2. ```scp -r web-app.zip root@IP:/home```
+
+### After copy execute below:
+
+4. ```chmod 755 deployement.sh```
+
+
+5. ```./deployement.sh db_user_name db_user_password```
+
+### After execution run below:
+
+7. ```vi .env```
+
+
+8. ```vi /var/lib/pgsql/data/pg_hba.conf```
+
+
+9. ```systemctl restart postgresql```
    

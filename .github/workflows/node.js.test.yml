@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y postgresql postgresql-contrib
-        sudo systemcl start postgre    
+        sudo systemctl start postgre    
         sudo systemctl start postgresql
         sudo systemctl enable postgresql
 
@@ -44,6 +44,6 @@ jobs:
     
     - name: Install Dependencies and Run Tests
       run: npm i
-      
+
     - name: " Run Tests"
       run: npm test

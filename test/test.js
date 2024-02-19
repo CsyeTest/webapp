@@ -9,7 +9,7 @@ describe('Integration Test', () => {
     const userData = {
         first_name: "nitesh",
         last_name: "more",
-        password: "nitesh123",
+        password: "",
         username: `nitesh_${suffix}@email.com`
     };
     const encodeValue = Buffer.from(`${userData.username}:${userData.password}`).toString('base64');

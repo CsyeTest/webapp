@@ -14,10 +14,13 @@ describe('Integration Test', () => {
     };
     const encodeValue = Buffer.from(`${userData.username}:${userData.password}`).toString('base64');
     const authHeader = `Basic ${encodeValue}`;
+   
     beforeAll(async () => {
         await db.sequelize.sync()
             .catch(error => console.error("Database Error :", error));
     });
+
+
     it('TEST 1 - Create user and validate using GET call ', async () => {
         const res = await request(app)
             .post("/v1/user")
